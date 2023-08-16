@@ -78,6 +78,8 @@ Installez jest-cli :
 ```
 $npm i -g jest-cli
 $jest src/__tests__/your_test_file.js
+or
+npm test -- src/__tests__/your_test_file.js
 ```
 
 ## Comment voir la couverture de test ?
