@@ -252,5 +252,45 @@ describe("Given I am connected as an employee", () => {
       expect(newBill.fileUrl).toBeNull();
       expect(newBill.fileName).toBeNull();
     });
+
+    /**
+     * Test to add a bill from mock API and it fails with a 500 message error.
+     * @async
+     * @test
+     */
+    test("Add a bill from mock API and fails with 500 message error", async () => {
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({
+          type: "Employee",
+        })
+      );
+      document.body.innerHTML = NewBillUI();
+
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+      const newBill = new NewBill({
+        document,
+        onNavigate,
+        store: mockStore,
+        localStorage: window.localStorage,
+      });
+
+      //error simulation
+      const mockedError = jest.spyOn(mockStore, "bills").mockImplementationOnce(() => {
+        return {
+          update: () => {
+            return Promise.reject(new Error("Erreur 500"));
+          },
+        };
+      });
+
+      // tests
+      await expect(mockedError().update).rejects.toThrow("Erreur 500");
+      expect(newBill.billId).toBeNull();
+      expect(newBill.fileUrl).toBeNull();
+      expect(newBill.fileName).toBeNull();
+    });
   });
 });
