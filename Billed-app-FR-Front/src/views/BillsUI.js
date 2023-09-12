@@ -19,14 +19,36 @@ const row = (bill) => {
     `;
 };
 
+const monthTranslations = {
+  Jan: "Jan",
+  Fév: "Feb",
+  Mar: "Mar",
+  Avr: "Apr",
+  Mai: "May",
+  Jui: "Jun",
+  Juil: "Jul",
+  Aoû: "Aug",
+  Sep: "Sep",
+  Oct: "Oct",
+  Nov: "Nov",
+  Déc: "Dec",
+};
+
 const rows = (data) => {
-  // fix bills order : sort from earliest to latest
-  return data && data.length
-    ? data
-        .sort((a, b) => (a.date < b.date ? 1 : -1))
-        .map((bill) => row(bill))
-        .join("")
-    : "";
+  if (data && data.length) {
+    data.forEach((bill) => {
+      for (const frMonth in monthTranslations) {
+        if (bill.date.includes(frMonth)) {
+          bill.date = bill.date.replace(frMonth, monthTranslations[frMonth]);
+          break;
+        }
+      }
+    });
+
+    data.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+  }
+
+  return data && data.length ? data.map((bill) => row(bill)).join("") : "";
 };
 
 export default ({ data: bills, loading, error }) => {
