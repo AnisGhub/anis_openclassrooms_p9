@@ -20,7 +20,7 @@ const row = (bill) => {
 };
 
 const rows = (data) => {
-  // fix bills order : add descendent sorting
+  // fix bills order : sort from earliest to latest
   return data && data.length
     ? data
         .sort((a, b) => (a.date < b.date ? 1 : -1))
