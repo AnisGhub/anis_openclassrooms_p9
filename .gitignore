@@ -6,4 +6,5 @@ node_modules
 coverage
 .idea
 Billed-app-FR-Back/database_dev.sqlite
+Billed-app-FR-Back/public/
 .vscode/settings.json

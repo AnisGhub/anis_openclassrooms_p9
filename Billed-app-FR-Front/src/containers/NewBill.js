@@ -22,8 +22,10 @@ export default class NewBill {
     e.preventDefault();
     const fileInput = this.document.querySelector(`input[data-testid="file"]`);
     let file = fileInput.files[0];
+    let fileName = file.name || null;
     const allowedExtensions = ["jpg", "jpeg", "png"];
-    const fileExtension = file.name.split(".").pop().toLowerCase();
+    const fileExtension = fileName.split(".").pop().toLowerCase();
+
     if (!allowedExtensions.includes(fileExtension)) {
       alert("Invalid file extension. Please choose a jpg, jpeg, or png file.");
       fileInput.value = ""; // Clear the file input
@@ -33,35 +35,17 @@ export default class NewBill {
 
     this.submitButton.disabled = false; // Enable submit button
 
-    const filePath = e.target.value.split(/\\/g);
-    const fileName = filePath[filePath.length - 1];
     const formData = new FormData();
     const email = JSON.parse(localStorage.getItem("user")).email;
     formData.append("file", file);
     formData.append("email", email);
 
-    this.store
-      .bills()
-      .create({
-        data: formData,
-        headers: {
-          noContentType: true,
-        },
-      })
-      .then(({ fileUrl, key }) => {
-        console.log(fileUrl);
-        this.billId = key;
-        this.fileUrl = fileUrl;
-        this.fileName = fileName;
-      })
-      .catch((error) => console.error(error));
+    this.formData = formData; // so it can be used in other methods
+    this.fileName = fileName;
   };
+
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log(
-      'e.target.querySelector(`input[data-testid="datepicker"]`).value',
-      e.target.querySelector(`input[data-testid="datepicker"]`).value
-    );
     const email = JSON.parse(localStorage.getItem("user")).email;
     const bill = {
       email,
@@ -76,8 +60,24 @@ export default class NewBill {
       fileName: this.fileName,
       status: "pending",
     };
-    this.updateBill(bill);
-    this.onNavigate(ROUTES_PATH["Bills"]);
+    // if image format is valid
+    // add this part in handleSubmit to upload image and create new bill only when image format is valid and form is complete
+    this.store
+      .bills()
+      .create({
+        data: this.formData,
+        headers: {
+          noContentType: true,
+        },
+      })
+      .then(({ fileUrl, key }) => {
+        this.billId = key;
+        this.fileUrl = fileUrl;
+      })
+      .then(() => {
+        this.updateBill(bill);
+      })
+      .catch((error) => console.error(error));
   };
 
   // not need to cover this function by tests

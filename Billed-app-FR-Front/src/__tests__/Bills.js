@@ -3,18 +3,28 @@
  */
 
 import "@testing-library/jest-dom/extend-expect";
-import userEvent from "@testing-library/user-event";
 import { screen, waitFor } from "@testing-library/dom";
 import BillsUI from "../views/BillsUI.js";
 import { bills } from "../fixtures/bills.js";
-import { ROUTES_PATH, ROUTES } from "../constants/routes.js";
+import { ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
 import router from "../app/Router.js";
 import Bills from "../containers/Bills.js";
 import mockStore from "../__mocks__/store.js";
 
+/**
+ * Describes the behavior when the user is connected as an employee.
+ */
 describe("Given I am connected as an employee", () => {
+  /**
+   * Describes the behavior when the user is on the Bills Page.
+   */
   describe("When I am on Bills Page", () => {
+    /**
+     * Test to verify that the bill icon in vertical layout is highlighted.
+     * @async
+     * @test
+     */
     test("Then bill icon in vertical layout should be highlighted", async () => {
       Object.defineProperty(window, "localStorage", { value: localStorageMock });
       window.localStorage.setItem(
@@ -30,10 +40,14 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.Bills);
       await waitFor(() => screen.getByTestId("icon-window"));
       const windowIcon = screen.getByTestId("icon-window");
-      // add expect
+      //tests
       expect(windowIcon).toHaveClass("active-icon");
     });
 
+    /**
+     * Test to verify that bills should be ordered from earliest to latest.
+     * @test
+     */
     test("Then bills should be ordered from earliest to latest", () => {
       document.body.innerHTML = BillsUI({ data: bills });
       const dates = screen
@@ -44,7 +58,11 @@ describe("Given I am connected as an employee", () => {
       expect(dates).toEqual(datesSorted);
     });
 
-    // adding new tests
+    /**
+     * Test to verify that navigation to the NewBill page is triggered when the "Nouvelle note de frais" button is clicked.
+     * @async
+     * @test
+     */
     test("Then should navigate to NewBill page when new bill button is clicked", async () => {
       const onNavigate = jest.fn();
       const document = { querySelector: jest.fn(), querySelectorAll: jest.fn() };
@@ -62,6 +80,11 @@ describe("Given I am connected as an employee", () => {
       });
     });
 
+    /**
+     * Test to verify that the modal opens with a bill image when the icon eye is clicked.
+     * @async
+     * @test
+     */
     test("Then modal should open with bill image when icon eye is clicked", async () => {
       const onNavigate = jest.fn();
       document.body.innerHTML = BillsUI({ data: bills });
@@ -98,9 +121,15 @@ describe("Given I am connected as an employee", () => {
   });
 });
 
-// integration test
+/**
+ * integration test
+ * Describes the behavior when the user is connected as an employee and is on the Bills Page.
+ */
 describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
+    /**
+     * Set up the environment before each test.
+     */
     beforeEach(async () => {
       // Simulate user being logged in
       Object.defineProperty(window, "localStorage", { value: localStorageMock });
@@ -120,6 +149,11 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.Bills);
     });
 
+    /**
+     * Test to verify that bills should be fetched and displayed successfully.
+     * @async
+     * @test
+     */
     test("Then bills should be fetched and displayed successfully", async () => {
       // Create an instance of the Bills component
       const billsInstance = new Bills({
@@ -144,6 +178,11 @@ describe("Given I am connected as an employee", () => {
       });
     });
 
+    /**
+     * Test to verify that bills should be fetched and fail.
+     * @async
+     * @test
+     */
     test("Then bills should be fetched and fails", async () => {
       // Create an instance of the Bills component
       const billsInstance = new Bills({
